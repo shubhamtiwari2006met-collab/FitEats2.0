@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - Gym & Diet Planner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            padding: 40px 20px;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin: 20px 0;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .result-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .bmi-display {
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .meal-plan {
+            display: grid;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .meal-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #4caf50;
+        }
+
+        .meal-item h4 {
+            color: #4caf50;
+            margin-bottom: 8px;
+        }
+
+        .exercise-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .exercise-list li {
+            background: white;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 3px solid #2196f3;
+        }
+
+        .feedback-item {
+            background: #f8f9ff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+
+        .feedback-item strong {
+            color: #667eea;
+        }
+
+        .homepage-content {
+            text-align: center;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .nav-links {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 600;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        #currentPage {
+            display: block;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 2em;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1> FitEats </h1>
+            <p>Your Personal Gym & Diet Planner</p>
+            <div class="nav-links">
+                <a href="#" onclick="showPage('home')">Home</a>
+                <a href="#" onclick="showPage('planner')">Get Plan</a>
+                <a href="#" onclick="showPage('feedback')">Feedback</a>
+            </div>
+        </header>
+
+        <!-- Home Page -->
+        <div id="home" class="page active">
+            <div class="card homepage-content">
+                <h2>Welcome to FitLife</h2>
+                <p style="margin: 20px 0; color: #666;">Your journey to a healthier lifestyle starts here!</p>
+                
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon">📊</div>
+                        <h3>BMI Calculator</h3>
+                        <p>Track your health metrics</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🥗</div>
+                        <h3>Diet Plans</h3>
+                        <p>Personalized meal suggestions</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🏋️</div>
+                        <h3>Exercise Guide</h3>
+                        <p>Custom workout routines</p>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="showPage('planner')">Start Now</button>
+            </div>
+        </div>
+
+        <!-- Planner Page -->
+        <div id="planner" class="page">
+            <div class="card">
+                <div id="formSection">
+                    <h2>Tell Us About Yourself</h2>
+                    <form id="userForm">
+                        <div class="form-group">
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="age">Age:</label>
+                            <input type="number" id="age" min="10" max="100" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gender">Gender:</label>
+                            <select id="gender" required>
+                                <option value="">Select</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="height">Height (cm):</label>
+                            <input type="number" id="height" min="100" max="250" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="weight">Weight (kg):</label>
+                            <input type="number" id="weight" min="30" max="200" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="activity">Activity Level:</label>
+                            <select id="activity" required>
+                                <option value="">Select</option>
+                                <option value="low">Low (Sedentary)</option>
+                                <option value="medium">Medium (Moderately Active)</option>
+                                <option value="high">High (Very Active)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="goal">Fitness Goal:</label>
+                            <select id="goal" required>
+                                <option value="">Select</option>
+                                <option value="weightloss">Weight Loss</option>
+                                <option value="weightgain">Weight Gain</option>
+                                <option value="musclegain">Muscle Gain</option>
+                            </select>
+                        </div>
+
+                        <button type="button" class="btn" onclick="generatePlan()">Generate My Plan</button>
+                    </form>
+                </div>
+
+                <div id="resultSection" class="hidden">
+                    <h2>Your Personalized Plan</h2>
+                    <div id="results"></div>
+                    <button class="btn back-btn" onclick="resetForm()">Create New Plan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Page -->
+        <div id="feedback" class="page">
+            <div class="card">
+                <h2>We Value Your Feedback</h2>
+                <form id="feedbackForm" onsubmit="submitFeedback(event)">
+                    <div class="form-group">
+                        <label for="feedbackName">Your Name:</label>
+                        <input type="text" id="feedbackName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="feedbackText">Feedback:</label>
+                        <textarea id="feedbackText" rows="5" required placeholder="Share your experience with us..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn">Submit Feedback</button>
+                </form>
+
+                <div id="feedbackList" style="margin-top: 30px;">
+                    <h3>Recent Feedback</h3>
+                    <div id="feedbackItems"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageName).classList.add('active');
+        }
+
+        function generatePlan() {
+            // Validate form
+            const name = document.getElementById('name').value;
+            const age = parseInt(document.getElementById('age').value);
+            const gender = document.getElementById('gender').value;
+            const height = parseInt(document.getElementById('height').value);
+            const weight = parseInt(document.getElementById('weight').value);
+            const activity = document.getElementById('activity').value;
+            const goal = document.getElementById('goal').value;
+
+            // Check if all fields are filled
+            if (!name || !age || !gender || !height || !weight || !activity || !goal) {
+                alert('Please fill in all fields!');
+                return;
+            }
+
+            // Calculate BMI
+            const heightM = height / 100;
+            const bmi = (weight / (heightM * heightM)).toFixed(1);
+
+            let bmiMessage = '';
+            if (bmi < 18.5) bmiMessage = 'Underweight - Focus on healthy weight gain';
+            else if (bmi < 25) bmiMessage = 'Normal weight - Maintain your healthy lifestyle';
+            else if (bmi < 30) bmiMessage = 'Overweight - Consider weight management';
+            else bmiMessage = 'Obese - Consult a healthcare provider';
+
+            // Calculate calorie needs
+            let bmr;
+            if (gender === 'male') {
+                bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+            } else {
+                bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+            }
+
+            let activityMultiplier = activity === 'low' ? 1.2 : activity === 'medium' ? 1.55 : 1.725;
+            let calories = Math.round(bmr * activityMultiplier);
+
+            if (goal === 'weightloss') calories -= 500;
+            else if (goal === 'weightgain' || goal === 'musclegain') calories += 500;
+
+            // Generate diet plan
+            const dietPlans = {
+                weightloss: {
+                    breakfast: 'Oatmeal with fruits, Green tea, Boiled eggs (2)',
+                    lunch: 'Grilled chicken breast, Brown rice, Mixed vegetables, Salad',
+                    dinner: 'Grilled fish, Quinoa, Steamed broccoli, Light soup'
+                },
+                weightgain: {
+                    breakfast: 'Whole wheat toast, Peanut butter, Banana smoothie, Eggs (3)',
+                    lunch: 'Chicken curry, White rice, Paneer, Mixed vegetables, Curd',
+                    dinner: 'Lean beef/chicken, Sweet potato, Green beans, Avocado salad'
+                },
+                musclegain: {
+                    breakfast: 'Protein shake, Whole grain toast, Scrambled eggs (4), Almonds',
+                    lunch: 'Grilled chicken/fish, Brown rice, Chickpeas, Spinach, Nuts',
+                    dinner: 'Lean steak/salmon, Quinoa, Broccoli, Greek yogurt'
+                }
+            };
+
+            // Generate exercise plan
+            const exercisePlans = {
+                weightloss: [
+                    'Cardio: 30-45 min running/cycling (5 days/week)',
+                    'HIIT Training: 20 min (3 days/week)',
+                    'Yoga/Stretching: 20 min (daily)',
+                    'Walking: 10,000 steps daily'
+                ],
+                weightgain: [
+                    'Weight Training: 45-60 min (4-5 days/week)',
+                    'Compound Exercises: Squats, Deadlifts, Bench Press',
+                    'Light Cardio: 15-20 min (2 days/week)',
+                    'Rest and Recovery: 2 days/week'
+                ],
+                musclegain: [
+                    'Heavy Weight Training: 60 min (5-6 days/week)',
+                    'Focus: Chest, Back, Legs, Shoulders, Arms (split routine)',
+                    'Compound Movements: Deadlifts, Squats, Bench Press',
+                    'Moderate Cardio: 20 min (2 days/week)',
+                    'Adequate Rest: 7-8 hours sleep'
+                ]
+            };
+
+            const diet = dietPlans[goal];
+            const exercises = exercisePlans[goal];
+
+            // Display results
+            const resultsHTML = `
+                <div class="result-section">
+                    <h3>Hello, ${name}! 👋</h3>
+                    <p><strong>Your BMI:</strong> <span class="bmi-display">${bmi}</span></p>
+                    <p>${bmiMessage}</p>
+                </div>
+
+                <div class="result-section">
+                    <h3>📊 Calorie Recommendation</h3>
+                    <p><strong>Daily Calorie Target:</strong> ${calories - 200} - ${calories + 200} kcal</p>
+                    <p>This range is calculated based on your goal: <strong>${goal.replace(/([A-Z])/g, ' $1').trim()}</strong></p>
+                </div>
+
+                <div class="result-section">
+                    <h3>🥗 Your Diet Plan</h3>
+                    <div class="meal-plan">
+                        <div class="meal-item">
+                            <h4>🌅 Breakfast</h4>
+                            <p>${diet.breakfast}</p>
+                        </div>
+                        <div class="meal-item">
+                            <h4>☀️ Lunch</h4>
+                            <p>${diet.lunch}</p>
+                        </div>
+                        <div class="meal-item">
+                            <h4>🌙 Dinner</h4>
+                            <p>${diet.dinner}</p>
+                        </div>
+                    </div>
+                    <p style="margin-top: 15px; color: #666;"><em>💧 Remember to drink 8-10 glasses of water daily!</em></p>
+                </div>
+
+                <div class="result-section">
+                    <h3>💪 Your Exercise Plan</h3>
+                    <ul class="exercise-list">
+                        ${exercises.map(ex => `<li>${ex}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="result-section">
+                    <h3>💡 Important Tips</h3>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        <li>Consistency is key - stick to your plan for at least 4-6 weeks</li>
+                        <li>Listen to your body and adjust as needed</li>
+                        <li>Get adequate sleep (7-8 hours) for recovery</li>
+                        <li>Consult a healthcare provider before starting any new fitness program</li>
+                    </ul>
+                </div>
+            `;
+
+            document.getElementById('results').innerHTML = resultsHTML;
+            document.getElementById('formSection').classList.add('hidden');
+            document.getElementById('resultSection').classList.remove('hidden');
+        }
+
+        function resetForm() {
+            document.getElementById('userForm').reset();
+            document.getElementById('formSection').classList.remove('hidden');
+            document.getElementById('resultSection').classList.add('hidden');
+        }
+
+        function submitFeedback(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('feedbackName').value;
+            const text = document.getElementById('feedbackText').value;
+
+            if (!name || !text) {
+                alert('Please fill in all fields!');
+                return;
+            }
+
+            const date = new Date().toLocaleString();
+
+            const feedbackItem = document.createElement('div');
+            feedbackItem.className = 'feedback-item';
+            feedbackItem.innerHTML = `
+                <strong>${name}</strong>
+                <p style="margin: 5px 0; color: #666; font-size: 0.9em;">${date}</p>
+                <p>${text}</p>
+            `;
+
+            const feedbackItems = document.getElementById('feedbackItems');
+            feedbackItems.insertBefore(feedbackItem, feedbackItems.firstChild);
+
+            document.getElementById('feedbackForm').reset();
+            alert('Thank you for your feedback! 🙏');
+        }
+
+        // Load with some sample feedback
+        window.addEventListener('load', function() {
+            const sampleFeedback = [
+                { name: 'Priya Sharma', text: 'Great tool! The diet plans are really helpful and easy to follow.', date: 'Oct 28, 2025' },
+                { name: 'Rahul Verma', text: 'Love the BMI calculator and personalized recommendations. Very useful for students!', date: 'Oct 27, 2025' }
+            ];
+
+            const feedbackItems = document.getElementById('feedbackItems');
+            sampleFeedback.forEach(fb => {
+                const item = document.createElement('div');
+                item.className = 'feedback-item';
+                item.innerHTML = `
+                    <strong>${fb.name}</strong>
+                    <p style="margin: 5px 0; color: #666; font-size: 0.9em;">${fb.date}</p>
+                    <p>${fb.text}</p>
+                `;
+                feedbackItems.appendChild(item);
+            });
+        });
+    </script>
+</body>
+</html>
